@@ -1,4 +1,6 @@
 import cv2
+import numpy as np
+from google.colab.patches import cv2_imshow  # For displaying images in Colab
 
 # Load YOLO pre-trained model for vehicle detection
 net = cv2.dnn.readNet("yolov3.weights", "yolov3.cfg")
@@ -8,17 +10,12 @@ classes = []
 with open("coco.names", "r") as f:
     classes = f.read().strip().split("\n")
 
-# Load the image
-image_path = "path_to_your_image.jpg"
+# Load the image (you can replace 'image.jpg' with the uploaded image's name)
 image = cv2.imread(image_path)
-
-# Get image dimensions
 height, width, _ = image.shape
 
 # Preprocess the image for YOLO
 blob = cv2.dnn.blobFromImage(image, 0.00392, (416, 416), (0, 0, 0), True, crop=False)
-
-# Set input blob for the network
 net.setInput(blob)
 
 # Get output layer names
@@ -43,10 +40,12 @@ for detection in detections:
             x = int(center_x - w / 2)
             y = int(center_y - h / 2)
             
+            # Draw the bounding box
             cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
             cv2.putText(image, "Vehicle", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
 # Display the image with detections
-cv2.imshow("Vehicle Detection", image)
+cv2_imshow(image)  # Use cv2_imshow for displaying images in Colab
 cv2.waitKey(0)
 cv2.destroyAllWindows()
+
